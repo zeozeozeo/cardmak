@@ -1,5 +1,3 @@
-// Character Card Creator - Main JavaScript
-
 class CharacterCardCreator {
     constructor() {
         this.currentImage = null;
