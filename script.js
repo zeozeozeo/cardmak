@@ -52,9 +52,6 @@ class CharacterCardCreator {
             .getElementById('exportJson')
             .addEventListener('click', () => this.exportAsJson());
         document
-            .getElementById('exportPng')
-            .addEventListener('click', () => this.exportAsPng());
-        document
             .getElementById('importCard')
             .addEventListener('click', () =>
                 document.getElementById('importInput').click()
@@ -604,56 +601,6 @@ class CharacterCardCreator {
         URL.revokeObjectURL(url);
     }
 
-    async exportAsPng() {
-        if (!this.currentImageData) {
-            alert('Please upload a character image before exporting as PNG.');
-            return;
-        }
-
-        const characterCard = this.createCharacterCard();
-        const jsonString = JSON.stringify(characterCard);
-        const base64Json = btoa(unescape(encodeURIComponent(jsonString)));
-
-        // Create a canvas to add metadata to the image
-        const img = new Image();
-        img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const ctx = canvas.getContext('2d');
-
-            canvas.width = img.width;
-            canvas.height = img.height;
-
-            ctx.drawImage(img, 0, 0);
-
-            // Convert to blob and download
-            canvas.toBlob((blob) => {
-                // Note: This is a simplified version. In a real implementation,
-                // you would need a library like ExifReader or similar to properly
-                // embed the JSON data in the PNG metadata
-                const url = URL.createObjectURL(blob);
-
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `${characterCard.data.name || 'character'}.png`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(url);
-
-                // For now, also save the JSON separately
-                console.log(
-                    'Character card JSON (save this separately):',
-                    jsonString
-                );
-                alert(
-                    'PNG exported! Note: For full compatibility, you may need to use specialized tools to embed the character data in the PNG metadata.'
-                );
-            }, 'image/png');
-        };
-
-        img.src = this.currentImageData;
-    }
-
     async importCard(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -664,11 +611,14 @@ class CharacterCardCreator {
                 const characterCard = JSON.parse(text);
                 this.loadCharacterCard(characterCard);
             } else if (file.type.startsWith('image/')) {
-                // For PNG files, we would need to extract the embedded JSON
-                // This is a simplified version - in reality you'd need proper PNG metadata reading
-                alert(
-                    'PNG import is not fully implemented in this demo. Please use JSON files for import.'
-                );
+                const tags = await ExifReader.load(file);
+                const chara = tags['chara'] || tags['Chara'];
+                if (chara.value) {
+                    const characterCard = JSON.parse(atob(chara.value));
+                    this.loadCharacterCard(characterCard);
+                } else {
+                    alert('No character card data found in the image.');
+                }
             }
         } catch (error) {
             alert('Error importing character card: ' + error.message);
