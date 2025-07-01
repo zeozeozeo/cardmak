@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SillyTavern Character Card Creator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>SillyTavern Character Card Creator</h1>
+            <p>Create and export character cards for SillyTavern</p>
+        </header>
+
+        <main>
+            <div class="card-preview">
+                <div class="image-section">
+                    <div class="image-upload" id="imageUpload">
+                        <img id="characterImage" src="" alt="Character Image" style="display: none;">
+                        <div class="upload-placeholder" id="uploadPlaceholder">
+                            <span>Click to upload character image</span>
+                            <small>PNG, JPG, WEBP supported</small>
+                        </div>
+                        <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                    </div>
+                </div>
+            </div>
+
+            <form id="characterForm" class="character-form">
+                <!-- Basic Information -->
+                <section class="form-section">
+                    <h2>Basic Information</h2>
+                    
+                    <div class="form-group">
+                        <label for="name">Name *</label>
+                        <input type="text" id="name" name="name" required placeholder="Character name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="creator">Creator</label>
+                        <input type="text" id="creator" name="creator" placeholder="Your name">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="character_version">Character Version</label>
+                        <input type="text" id="character_version" name="character_version" placeholder="1.0">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tags">Tags</label>
+                        <input type="text" id="tags" name="tags" placeholder="fantasy, warrior, female (comma-separated)">
+                    </div>
+                </section>
+
+                <!-- Character Details -->
+                <section class="form-section">
+                    <h2>Character Details</h2>
+                    
+                    <div class="form-group">
+                        <label for="description">Description *</label>
+                        <textarea id="description" name="description" required placeholder="Detailed character description..." rows="6"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="personality">Personality *</label>
+                        <textarea id="personality" name="personality" required placeholder="Character personality traits..." rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="scenario">Scenario *</label>
+                        <textarea id="scenario" name="scenario" required placeholder="Setting and situation..." rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="first_mes">First Message *</label>
+                        <textarea id="first_mes" name="first_mes" required placeholder="Character's opening message..." rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mes_example">Message Examples</label>
+                        <textarea id="mes_example" name="mes_example" placeholder="Example dialogue between {{user}} and {{char}}..." rows="6"></textarea>
+                    </div>
+                </section>
+
+                <!-- Advanced Settings -->
+                <section class="form-section">
+                    <h2>Advanced Settings</h2>
+                    
+                    <div class="form-group">
+                        <label for="system_prompt">System Prompt</label>
+                        <textarea id="system_prompt" name="system_prompt" placeholder="Custom system prompt (use {{original}} to include default)..." rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="post_history_instructions">Post-History Instructions</label>
+                        <textarea id="post_history_instructions" name="post_history_instructions" placeholder="Jailbreak/UJB instructions (use {{original}} to include default)..." rows="4"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="creator_notes">Creator Notes</label>
+                        <textarea id="creator_notes" name="creator_notes" placeholder="Notes for users (not used in prompts)..." rows="3"></textarea>
+                    </div>
+                </section>
+
+                <!-- Alternate Greetings -->
+                <section class="form-section">
+                    <h2>Alternate Greetings</h2>
+                    <div id="alternateGreetings">
+                        <!-- Dynamic greeting inputs will be added here -->
+                    </div>
+                    <button type="button" id="addGreeting" class="btn-secondary">Add Alternate Greeting</button>
+                </section>
+
+                <!-- Character Book -->
+                <section class="form-section">
+                    <h2>Character Book (Lorebook)</h2>
+                    
+                    <div class="form-group">
+                        <label for="book_name">Book Name</label>
+                        <input type="text" id="book_name" name="book_name" placeholder="Character's lorebook">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="book_description">Book Description</label>
+                        <textarea id="book_description" name="book_description" placeholder="Description of the lorebook..." rows="2"></textarea>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="scan_depth">Scan Depth</label>
+                            <input type="number" id="scan_depth" name="scan_depth" placeholder="100" min="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="token_budget">Token Budget</label>
+                            <input type="number" id="token_budget" name="token_budget" placeholder="500" min="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="recursive_scanning">
+                                <input type="checkbox" id="recursive_scanning" name="recursive_scanning">
+                                Recursive Scanning
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="bookEntries">
+                        <!-- Dynamic book entries will be added here -->
+                    </div>
+                    <button type="button" id="addBookEntry" class="btn-secondary">Add Lorebook Entry</button>
+                </section>
+
+                <!-- Export Section -->
+                <section class="form-section export-section">
+                    <h2>Export Character Card</h2>
+                    <div class="export-buttons">
+                        <button type="button" id="exportJson" class="btn-primary">Export as JSON</button>
+                        <button type="button" id="exportPng" class="btn-primary">Export as PNG</button>
+                        <button type="button" id="importCard" class="btn-secondary">Import Card</button>
+                        <input type="file" id="importInput" accept=".json,.png" style="display: none;">
+                    </div>
+                </section>
+            </form>
+        </main>
+    </div>
+
+    <!-- Macro Autocomplete -->
+    <div id="macroAutocomplete" class="macro-autocomplete" style="display: none;">
+        <ul id="macroList"></ul>
+    </div>
+
+    <script src="macros.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
